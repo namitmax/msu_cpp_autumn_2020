@@ -10,4 +10,4 @@ main.o: main.cpp test_runner.hpp allocator.hpp
 	$(CC) $(FLAGS) -c main.cpp
 
 clean:
-	rm -rf *.o a.out
+	rm -rf *.o test

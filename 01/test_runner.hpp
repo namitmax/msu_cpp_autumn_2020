@@ -85,30 +85,30 @@ inline void Assert(bool b, const std::string& hint) {
 }
 
 class TestRunner {
- public:
-  template <class TestFunc>
-  void RunTest(TestFunc func, const std::string& test_name) {
-    try {
-      func();
-      std::cerr << test_name << " OK \n";
-    } catch (std::exception& e) {
-      ++fail_count;
-      std::cerr << test_name << " fail: " << e.what() << "\n";
-    } catch (...) {
-      ++fail_count;
-      std::cerr << "Unknown exception caught \n";
+  public:
+    template <class TestFunc>
+    void RunTest(TestFunc func, const std::string& test_name) {
+      try {
+        func();
+        std::cerr << test_name << " OK \n";
+      } catch (std::exception& e) {
+        ++fail_count;
+        std::cerr << test_name << " fail: " << e.what() << "\n";
+      } catch (...) {
+        ++fail_count;
+        std::cerr << "Unknown exception caught \n";
+      }
     }
+
+    ~TestRunner() {
+      if (fail_count > 0) {
+        std::cerr << fail_count << " unit tests failed. Terminate \n";
+        exit(1);
+      }
   }
 
-  ~TestRunner() {
-    if (fail_count > 0) {
-      std::cerr << fail_count << " unit tests failed. Terminate \n";
-      exit(1);
-    }
-  }
-
- private:
-  int fail_count = 0;
+  private:
+    int fail_count = 0;
 };
 
 #endif  // TEST_RUNNER_H_
