@@ -31,12 +31,16 @@ class Allocator {
     }
 
     char* alloc(size_t size) {
-      if ((size + current - 1 >= fullSize) || (size < 1)) {
+      if ((size + current > fullSize) || (size < 1)) {
         return nullptr;
       }
+      char *temp = begin + current;
       current += size;
-      char *temp = begin + current - 1;
       return temp;
+    }
+
+    char* get_ptr_by_offset(size_t size) {
+      return begin + size;
     }
 
     void reset() {
