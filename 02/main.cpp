@@ -8,7 +8,7 @@ void OutputNumber(const int n) {
   std::cout << "Number " << n << "\n";
 }
 
-void OutputString(const char* str) {
+void OutputString(const std::string& str) {
   std::cout << "String " << str << "\n";
 }
 

@@ -1,13 +1,15 @@
 #ifndef PARSER_HPP_
 #define PARSER_HPP_
 
+#include <functional>
 #include <string>
 #include <cstring>
+#include <sstream>
 
-using StringToken = void(*)(const char* str);
-using DigitToken  = void(*)(const int number);
-using StartParse  = void(*)();
-using EndParse    = void(*)();
+using StringToken = std::function<void (const std::string& str)>;
+using DigitToken  = std::function<void (const int number)>;
+using StartParse  = std::function<void ()>;
+using EndParse    = std::function<void ()>;
 
 class TokenParser {
   private:
@@ -16,17 +18,34 @@ class TokenParser {
     StartParse  startParsingCallback;
     EndParse    endParsingCallback;
 
-    bool isDigit(const char* str, int* number) {
-      size_t n = strlen(str);
+    bool isDigit(const std::string& str, int* number) {
       int temp;
-      for (size_t i = 0; i < n; i++) {
-        if (!strchr("0123456789", str[i]))
+      for (size_t i = 0; i < str.size(); i++) {
+        if (!isdigit(str[i]))
           return false;
       }
-      if (sscanf(str, "%d", &temp) != 1)
+      std::istringstream inputDigit(str);
+      if (!(inputDigit >> temp))
         return false;
       *number = temp;
       return true;
+    }
+
+    void ProcessToken(const std::string& temp) {
+      int number;
+      if (temp != "") {
+        if (!(isDigit(temp, &number))) {
+          if (stringCallback != nullptr)
+            stringCallback(temp);
+          else
+            std::cout << "There is no some special callback for string\n";
+        } else {
+          if (digitCallback != nullptr)
+            digitCallback(number);
+          else
+            std::cout << "There is no some special callback for digit\n";
+        }
+      }
     }
 
   public:
@@ -38,34 +57,28 @@ class TokenParser {
 
     ~TokenParser() {}
 
-    void Parse(const std::string input) {
+    void Parse(const std::string& input) {
       if (startParsingCallback != nullptr)
         startParsingCallback();
       else
-        printf("There is no some special callback for start parsing\n");
-      char *temp = new char[input.length() + 1];
-      int number;
-      strcpy(temp, input.c_str());
-      char *token = strtok(temp, " \n\t");
-      while (token != NULL) {
-        if (!(isDigit(token, &number))) {
-          if (stringCallback != nullptr)
-            stringCallback(token);
-          else
-            printf("There is no some special callback for string\n");
-        } else {
-          if (digitCallback != nullptr)
-            digitCallback(number);
-          else
-            printf("There is no some special callback for digit\n");
-        }
-        token = strtok(NULL, " \n\t");
+        std::cout << "There is no some special callback for start parsing\n";
+      std::string delims = " \n\t";
+      std::string str = input;
+      std::string temp;
+      size_t current, previous = 0;
+      current = str.find_first_of(delims);
+      while (current != std::string::npos) {
+        temp = str.substr(previous, current - previous);
+        ProcessToken(temp);
+        previous = current + 1;
+        current = str.find_first_of(delims, previous);
       }
+      temp = str.substr(previous, str.size() - previous);
+      ProcessToken(temp);
       if (endParsingCallback != nullptr)
         endParsingCallback();
       else
-        printf("There is no some special callback for end parsing\n");
-      delete [] temp;
+        std::cout << "There is no some special callback for end parsing\n";
     }
 
     void SetStartCallback(StartParse someCallback) {

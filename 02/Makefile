@@ -1,13 +1,15 @@
 CC=g++
-FLAGS=-std=c++17 -g -mfpmath=sse -fstack-protector-all -g -W -Wall -Wextra -Wunused -Wcast-align -Werror -pedantic -pedantic-errors -Wfloat-equal -Wpointer-arith -Wformat-security -Wmissing-format-attribute -Wformat=1 -Wwrite-strings -Wcast-align -Wno-long-long -Woverloaded-virtual -Wnon-virtual-dtor -Wcast-qual -Wno-suggest-attribute=format -fsanitize=address
+FLAGS=-std=c++17 -O3 -g -fsanitize=address
+WARNINGS = -Wall -Wextra -Wunused -Wcast-align -Werror -pedantic -pedantic-errors -Wfloat-equal -Wpointer-arith -Wformat-security -Wmissing-format-attribute -Wformat=1 -Wwrite-strings -Wcast-align -Wno-long-long -Woverloaded-virtual -Wnon-virtual-dtor -Wcast-qual -Wno-suggest-attribute=format
 
-all: test
-
-test:  main.o
-	$(CC) $(FLAGS) -o test main.o
+exec:  main.o
+	$(CC) $(FLAGS) -o exec main.o
 
 main.o: main.cpp parser.hpp test_runner.hpp
-	$(CC) $(FLAGS) -c main.cpp
+	$(CC) $(FLAGS) $(WARNINGS) -c main.cpp
+
+test:
+	./exec
 
 clean:
-	rm -rf *.o test
+	rm -rf *.o exec
