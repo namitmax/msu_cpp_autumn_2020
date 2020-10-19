@@ -63,18 +63,14 @@ class TokenParser {
       else
         std::cout << "There is no some special callback for start parsing\n";
       std::string delims = " \n\t";
-      std::string str = input;
-      std::string temp;
       size_t current, previous = 0;
-      current = str.find_first_of(delims);
+      current = input.find_first_of(delims);
       while (current != std::string::npos) {
-        temp = str.substr(previous, current - previous);
-        ProcessToken(temp);
+        ProcessToken(input.substr(previous, current - previous));
         previous = current + 1;
-        current = str.find_first_of(delims, previous);
+        current = input.find_first_of(delims, previous);
       }
-      temp = str.substr(previous, str.size() - previous);
-      ProcessToken(temp);
+      ProcessToken(input.substr(previous, input.size() - previous));
       if (endParsingCallback != nullptr)
         endParsingCallback();
       else
