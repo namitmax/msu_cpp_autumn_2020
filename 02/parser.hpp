@@ -5,6 +5,8 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include <stdexcept>
+#include <vector>
 
 using StringToken = std::function<void (const std::string& str)>;
 using DigitToken  = std::function<void (const int number)>;
@@ -13,37 +15,48 @@ using EndParse    = std::function<void ()>;
 
 class TokenParser {
   private:
-    StringToken stringCallback;
-    DigitToken  digitCallback;
-    StartParse  startParsingCallback;
-    EndParse    endParsingCallback;
+    StringToken              stringCallback;
+    DigitToken               digitCallback;
+    StartParse               startParsingCallback;
+    EndParse                 endParsingCallback;
+    std::vector<std::string> log;
+    std::vector<bool>        isDigitLog;
+    std::vector<int>         callBackLog;
 
-    bool isDigit(const std::string& str, int* number) {
-      int temp;
+    bool isDigit(const std::string& str) {
       for (size_t i = 0; i < str.size(); i++) {
         if (!isdigit(str[i]))
           return false;
       }
-      std::istringstream inputDigit(str);
-      if (!(inputDigit >> temp))
-        return false;
-      *number = temp;
       return true;
     }
 
+    int GetDigit(const std::string& str) {
+      int temp;
+      std::istringstream inputDigit(str);
+      inputDigit >> temp;
+      return temp;
+    }
+
     void ProcessToken(const std::string& temp) {
-      int number;
       if (temp != "") {
-        if (!(isDigit(temp, &number))) {
-          if (stringCallback != nullptr)
+        log.push_back(temp);
+        if (!(isDigit(temp))) {
+          isDigitLog.push_back(false);
+          if (stringCallback != nullptr) {
             stringCallback(temp);
-          else
+            callBackLog.push_back(1);
+          } else {
             std::cout << "There is no some special callback for string\n";
+          }
         } else {
-          if (digitCallback != nullptr)
-            digitCallback(number);
-          else
+          isDigitLog.push_back(true);
+          if (digitCallback != nullptr) {
+            digitCallback(GetDigit(temp));
+            callBackLog.push_back(2);
+          } else {
             std::cout << "There is no some special callback for digit\n";
+          }
         }
       }
     }
@@ -58,10 +71,12 @@ class TokenParser {
     ~TokenParser() {}
 
     void Parse(const std::string& input) {
-      if (startParsingCallback != nullptr)
+      if (startParsingCallback != nullptr) {
         startParsingCallback();
-      else
+        callBackLog.push_back(0);
+      } else {
         std::cout << "There is no some special callback for start parsing\n";
+      }
       std::string delims = " \n\t";
       size_t current, previous = 0;
       current = input.find_first_of(delims);
@@ -71,10 +86,27 @@ class TokenParser {
         current = input.find_first_of(delims, previous);
       }
       ProcessToken(input.substr(previous, input.size() - previous));
-      if (endParsingCallback != nullptr)
+      log.push_back("");
+      isDigitLog.push_back(false);
+      if (endParsingCallback != nullptr) {
         endParsingCallback();
-      else
+        callBackLog.push_back(3);
+      } else {
         std::cout << "There is no some special callback for end parsing\n";
+      }
+      callBackLog.push_back(-1);
+    }
+
+    int getCallBackLog(const size_t i) {
+      return callBackLog[i];
+    }
+
+    std::string getLog(const size_t i) {
+      return log[i];
+    }
+
+    bool getIsDigitLog(const size_t i) {
+      return isDigitLog[i];
     }
 
     void SetStartCallback(StartParse someCallback) {
