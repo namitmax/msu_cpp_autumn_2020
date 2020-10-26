@@ -6,10 +6,14 @@ void TestBadMatrix() {
   size_t n = 4;
   size_t m = 3;
   Matrix m1(n, m);
-  Matrix m2(n, m + 1);
+  Matrix m2(n + 1, m + 1);
   for (size_t i = 0; i < n; i++)
     for (size_t j = 0; j < m; j++) {
       m1[i][j] = int (i + j);
+      m2[i][j] = int (i - j);
+    }
+  for (size_t i = n; i < n + 1; i++)
+    for (size_t j = n; j < m + 1; j++) {
       m2[i][j] = int (i - j);
     }
   ASSERT_EQUAL(m1 == m2, false)
@@ -34,7 +38,8 @@ void TestBadMatrix() {
   catch (std::out_of_range& e) {
     t++;
   }
-  ASSERT_EQUAL(3, t)
+  ASSERT_EQUAL(2, t)
+  ASSERT_EQUAL(m1 == m2, true)
 }
 
 void TestOutputMatrix() {
@@ -51,7 +56,7 @@ void TestOutputMatrix() {
     for (size_t j = 0; j < m; j++) {
       input >> temp;
       ASSERT_EQUAL(m3[i][j], temp)
-    } 
+    }
 }
 
 void SimpleTestMatrix() {
@@ -76,6 +81,8 @@ void SimpleTestMatrix() {
     for (size_t j = 0; j < m; j++) {
       ASSERT_EQUAL(m3[i][j], int (2 * i))
     }
+  Matrix m4(m3);
+  ASSERT_EQUAL(m4 == m3, true)
   m3 *= 4;
   for (size_t i = 0; i < n; i++)
     for (size_t j = 0; j < m; j++) {
@@ -83,6 +90,7 @@ void SimpleTestMatrix() {
     }
   ASSERT_EQUAL((m1 != m3), true)
   ASSERT_EQUAL(m1 == m3, false)
+  ASSERT_EQUAL(m4 == m3, false)
   std::ofstream output("output.txt");
   output << m3;
 }

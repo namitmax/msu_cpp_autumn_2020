@@ -1,46 +1,31 @@
 #ifndef PROXY_MATRIX_HPP_
 #define PROXY_MATRIX_HPP_
 
-class proxyMatrix {
+#include <cstddef>
+#include <stdexcept>
+
+class ProxyMatrix {
   private:
     size_t rowNumber;
     int*   row;
 
   public:
-    proxyMatrix():
+    ProxyMatrix():
     rowNumber(0),
     row(nullptr) {}
 
-  proxyMatrix(size_t n):
-    rowNumber(n) {
-    row = new int[n];
-  }
+  ProxyMatrix(size_t n);
 
-  void newElement(size_t n) {
-    rowNumber = n;
-    row = new int[n];
-  }
+  void newElement(size_t n);
 
-  void delElement() {
-    if (row != nullptr)
-      delete [] row;
-  }
+  void delElement();
 
-  ~proxyMatrix() {}
+  ~ProxyMatrix() {}
 
-  int operator[] (size_t n) const {
-    if (n >= rowNumber) {
-      throw std::out_of_range("row index is out of range");
-    }
-    return row[n];
-  }
+  int& operator[] (size_t n) const;
 
-  int& operator[] (size_t n) {
-    if (n >= rowNumber) {
-      throw std::out_of_range("row index is out of range");
-    }
-    return row[n];
-  }
+  int& operator[] (size_t n);
+
 };
 
 
