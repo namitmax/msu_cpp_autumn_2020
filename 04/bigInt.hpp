@@ -70,7 +70,7 @@ class BigInt {
 
     bool operator< (const int& other) const;
 
-    BigInt operator- ();
+    BigInt operator- () const;
 
     BigInt operator+ (const BigInt& other) const;
 

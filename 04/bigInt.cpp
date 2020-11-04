@@ -62,7 +62,7 @@ void BigInt::HelpAdd(BigInt& temp, const BigInt& num1,
   }
   if (temp2 != 0) {
     temp.size++;
-    temp.number[size - 1] = '1';
+    temp.number[temp.size - 1] = '1';
   }
 }
 
@@ -141,8 +141,8 @@ BigInt::BigInt (const BigInt& input) {
 
 BigInt::BigInt (BigInt&& input) {
   number = input.number;
-  size = std::move(input.size);
-  sign = std::move(input.sign);
+  size = input.size;
+  sign = input.sign;
   input.number = nullptr;
   input.size = 0;
   input.sign = true;
@@ -173,9 +173,9 @@ BigInt& BigInt::operator= (BigInt&& other) {
     return *this;
   if (number != nullptr)
     delete [] number;
-  size = std::move(other.size);
+  size = other.size;
   number = other.number;
-  sign = std::move(other.sign);
+  sign = other.sign;
   other.number = nullptr;
   other.sign = true;
   other.size = 0;
@@ -262,9 +262,10 @@ bool BigInt::operator< (const int& other) const {
   return *this < temp;
 }
 
-BigInt BigInt::operator- () {
-  this->sign = !this->sign;
-  return *this;
+BigInt BigInt::operator- () const {
+  BigInt temp(*this);
+  temp.sign = !temp.sign;
+  return temp;
 }
 
 BigInt BigInt::operator- (const BigInt& other) const {

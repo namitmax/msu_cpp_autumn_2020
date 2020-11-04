@@ -37,6 +37,9 @@ void SimpleTest() {
   int n = 30;
   int m = 40;
   BigInt res;
+  BigInt a1 = 50;
+  BigInt a2 = 50;
+  ASSERT_EQUAL(a1 + a2, 100)
   for (int i = 0; i < n; i++)
     for (int j = 0; j < m; j++) {
       res = i + j;
@@ -49,6 +52,8 @@ void SimpleTest() {
       res *= 2;
       ASSERT_EQUAL(res, -200 * i + 2 * j)
       ASSERT_EQUAL(-res, 200 * i - 2 * j)
+      // если бы - менял состояние res, то этот тест не был бы пройден
+      ASSERT_EQUAL(res, -200 * i + 2 * j)
     }
 }
 
