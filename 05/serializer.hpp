@@ -30,8 +30,7 @@ class Serializer {
     }
 
     template <class T>
-    Error makeString(T value) {
-      (void) value;
+    Error makeString(T /* value */) {
       return Error::CorruptedArchive;
     }
 
@@ -66,8 +65,7 @@ class Deserializer {
     }
 
     template <class T>
-    Error fromStream(T value) {
-      (void) value;
+    Error fromStream(T /* value */) {
       return Error::CorruptedArchive;
     }
 

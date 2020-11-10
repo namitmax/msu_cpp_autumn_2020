@@ -21,7 +21,7 @@ Error Deserializer::fromStream(uint64_t& value) {
   try {
     tempValue = std::stoull(text);
   }
-  catch (std::logic_error& ex) {
+  catch (const std::logic_error& ex) {
     return Error::CorruptedArchive;
   }
   value = tempValue;
