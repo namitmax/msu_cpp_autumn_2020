@@ -7,25 +7,25 @@ void BadTest() {
   int k = 0;
   try {
     text = format("{1}+{1} = {0}", 2);
-  } catch (const std::runtime_error& err) {
+  } catch (const std::exception& err) {
     k++;
   }
   ASSERT_EQUAL(k, 1)
   try {
     text = format("{1}+{1} = {0} }", 2, 1);
-  } catch (const std::runtime_error& err) {
+  } catch (const std::exception& err) {
     k++;
   }
   ASSERT_EQUAL(k, 2)
   try {
     text = format("{1}+{1} = {0} {", 2, 1);
-  } catch (const std::runtime_error& err) {
+  } catch (const std::exception& err) {
     k++;
   }
   ASSERT_EQUAL(k, 3)
   try {
     text = format("{1}+{1} = {0adf}", 2, 1);
-  } catch (const std::runtime_error& err) {
+  } catch (const std::exception& err) {
     k++;
   }
   ASSERT_EQUAL(k, 4)

@@ -6,6 +6,42 @@
 #include <vector>
 #include <string>
 
+class ExtraSymbolException : public std::exception {
+  private:
+    bool isOpen = true;
+    std::string badToken = "";
+
+  public:
+    explicit ExtraSymbolException(const bool whatExcept) {
+      isOpen = whatExcept;
+    }
+
+    const char* what() const noexcept override {
+      std::string temp;
+      if (isOpen)
+        return "There is an extra '{' in token";
+      return "There is an extra '}' in token";
+    }
+};
+
+class ParametrsException : public std::exception {
+  public:
+    explicit ParametrsException(const bool whatExcept) {
+      whatException = whatExcept;
+    }
+
+    const char* what() const noexcept override {
+      std::string temp;
+      if (whatException)
+        return "There is an extra symbol in brackets";
+      return "There is an extra number in string";
+    }
+
+  private:
+    bool whatException = true;
+    std::string badToken = "";
+};
+
 bool isDigit(const std::string& str) {
   for (size_t i = 0; i < str.size(); i++) {
     if (!isdigit(str[i]))
@@ -15,14 +51,11 @@ bool isDigit(const std::string& str) {
 }
 
 int takeDigit(const std::string& str) {
-  int temp;
-  std::istringstream inputDigit(str);
-  inputDigit >> temp;
-  return temp;
+  return std::stoi(str);
 }
 
 template <class T>
-std::string makeString(T&& str) {
+std::string makeString(const T& str) {
   std::stringstream input;
   input << str;
   return input.str();
@@ -30,46 +63,46 @@ std::string makeString(T&& str) {
 
 template <class... Args>
 std::string format(const std::string& str,
-                   Args&&... args) {
-  std::vector<std::string> temp = { makeString(std::forward<Args>(args))... };
+                   const Args&... args) {
+  std::vector<std::string> temp = { makeString(args)... };
   std::string buf = "", result = "";
-  char t;
-  bool flag = false;
-  size_t n = 0;
+  char tempSym;
+  bool isOpen = false;
+  size_t paramNum = 0;
   for (size_t i = 0; i < str.size(); ++i) {
-    t = str[i];
-    if (flag) {
-      if (t == '{') {
-        throw std::runtime_error("extra '{'");
+    tempSym = str[i];
+    if (isOpen) {
+      if (tempSym == '{') {
+        throw ExtraSymbolException(true);
       } else {
-        if (t == '}') {
+        if (tempSym == '}') {
           if (!(isDigit(buf))) {
-            throw std::runtime_error("there is an extra symbol in brackets");
+            throw ParametrsException(true);
           }
-          n = takeDigit(buf);
-          if (n >= temp.size()) {
-            throw std::runtime_error("there is an extra number in string");
+          paramNum = takeDigit(buf);
+          if (paramNum >= temp.size()) {
+            throw ParametrsException(false);
           }
-          result += temp[n];
+          result += temp[paramNum];
           buf = "";
-          flag = false;
+          isOpen = false;
         } else {
-          buf += t;
+          buf += tempSym;
         }
       }
     } else {
-      if (t == '{') {
-        flag = true;
+      if (tempSym == '{') {
+        isOpen = true;
       } else {
-        if (t == '}') {
-          throw std::runtime_error("there is an extra '}'");
+        if (tempSym == '}') {
+          throw ExtraSymbolException(false);
         } else {
-          result += t;
+          result += tempSym;
         }
       }
     }
   }
-  if (flag)
+  if (isOpen)
     throw std::runtime_error("there is an extra '{'");
   return result;
 }
