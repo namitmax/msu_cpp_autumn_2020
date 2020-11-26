@@ -3,8 +3,6 @@
 
 #include <memory>
 #include <iterator>
-#include <iostream>
-#include <utility>
 
 template <class T>
 class Iterator : public std::iterator <std::random_access_iterator_tag, T> {
@@ -78,10 +76,54 @@ class Vector {
       capacity_(0),
       data_(allocator_.allocate(0)) { }
 
+    explicit Vector(const size_t size):
+      size_(size),
+      capacity_(size),
+      data_(allocator_.allocate(size)) { }
+
+    Vector(const Vector& other) {
+      size_ = other.size_;
+      capacity_ = other.capacity_;
+      data_ = allocator_.allocate(other.capacity_);
+      for (size_t i = 0; i < other.size_; i++) {
+        data_[i] = other.data_[i];
+      }
+    }
+
+    Vector(Vector&& other) {
+      size_ = other.size_;
+      capacity_ = other.capacity_;
+      data_ = other.data_;
+      other.data_ = nullptr;
+      other.size_ = 0;
+      other.capacity_ = 0;
+    }
+
+    Vector& operator=(const Vector& other) {
+      allocator_.deallocate(data_);
+      capacity_ = other.capacity_;
+      data_ = allocator_.allocate(other.capacity_);
+      for (size_t i = 0; i < other.size_; i++) {
+        data_[i] = other.data_[i];
+      }
+      return *this;
+    }
+
+    Vector& operator=(Vector&& other) {
+      allocator_.deallocate(data_);
+      size_ = other.size_;
+      capacity_ = other.capacity_;
+      data_ = other.data_;
+      other.data_ = nullptr;
+      other.size_ = 0;
+      other.capacity_ = 0;
+      return *this;
+    }
+
     void reserve(size_t size) {
       T* newData = allocator_.allocate(size);
       for (size_t i = 0; i < size_; i++) {
-        allocator_.construct(newData + i, data_[i]);
+        allocator_.construct(newData + i, std::move(data_[i]));
         allocator_.destroy(data_ + i);
       }
       allocator_.deallocate(data_);
@@ -97,7 +139,23 @@ class Vector {
       }
     }
 
+    T& operator[](size_t i) const {
+      if (i < size_) {
+        return data_[i];
+      } else {
+        throw std::out_of_range("out of range");
+      }
+    }
+
     void push_back(const T& element) {
+      if (size_ + 1 > capacity_) {
+        reserve((size_ + 1) * 2);
+      }
+      allocator_.construct(data_ + size_, element);
+      size_++;
+    }
+
+    void push_back(T&& element) {
       if (size_ + 1 > capacity_) {
         reserve((size_ + 1) * 2);
       }

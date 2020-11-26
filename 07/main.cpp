@@ -19,6 +19,10 @@ void EmplaceTest() {
   ASSERT_EQUAL(temp[0].name, "Nelson Mandela")
   ASSERT_EQUAL(temp[0].country, "South Africa")
   ASSERT_EQUAL(temp[0].year, 1994)
+  temp.push_back(President("Nelson Mandela", "South Africa", 1994));
+  ASSERT_EQUAL(temp[1].name, "Nelson Mandela")
+  ASSERT_EQUAL(temp[1].country, "South Africa")
+  ASSERT_EQUAL(temp[1].year, 1994)
 }
 
 void SimpleTest() {
@@ -53,6 +57,24 @@ void SimpleTest() {
   ASSERT_EQUAL(temp.size(), comp)
   ASSERT_EQUAL(temp.empty(), true)
   ASSERT_EQUAL(temp.capacity() != comp, true)
+  Vector<size_t> temp1(temp);
+  for (size_t i = 0; i < temp.size(); i++) {
+    ASSERT_EQUAL(temp[i], temp1[i]);
+  }
+  Vector<size_t> temp2(std::move(temp));
+  for (size_t i = 0; i < temp.size(); i++) {
+    ASSERT_EQUAL(temp[i], temp2[i]);
+  }
+  Vector<size_t> temp3(temp.size());
+  Vector<size_t> temp4;
+  temp3 = temp;
+  for (size_t i = 0; i < temp.size(); i++) {
+    ASSERT_EQUAL(temp[i], temp3[i]);
+  }
+  temp4 = std::move(temp);
+  for (size_t i = 0; i < temp.size(); i++) {
+    ASSERT_EQUAL(temp[i], temp4[i]);
+  }
 }
 
 int main() {
