@@ -19,7 +19,8 @@ void EmplaceTest() {
   ASSERT_EQUAL(temp[0].name, "Nelson Mandela")
   ASSERT_EQUAL(temp[0].country, "South Africa")
   ASSERT_EQUAL(temp[0].year, 1994)
-  temp.push_back(President("Nelson Mandela", "South Africa", 1994));
+  President record = President("Nelson Mandela", "South Africa", 1994);
+  temp.push_back(std::move(record));
   ASSERT_EQUAL(temp[1].name, "Nelson Mandela")
   ASSERT_EQUAL(temp[1].country, "South Africa")
   ASSERT_EQUAL(temp[1].year, 1994)

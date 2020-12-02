@@ -1,7 +1,9 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <utility>
 #include <memory>
+#include <iostream>
 #include <iterator>
 
 template <class T>
@@ -139,7 +141,7 @@ class Vector {
       }
     }
 
-    T& operator[](size_t i) const {
+    const T& operator[](size_t i) const {
       if (i < size_) {
         return data_[i];
       } else {
@@ -159,7 +161,7 @@ class Vector {
       if (size_ + 1 > capacity_) {
         reserve((size_ + 1) * 2);
       }
-      allocator_.construct(data_ + size_, element);
+      allocator_.construct(data_ + size_, std::move(element));
       size_++;
     }
 
@@ -197,7 +199,7 @@ class Vector {
           allocator_.reserve(newSize);
         }
         for (T* i = size_ + 1; i < newSize; i++) {
-          allocator_.construct(i);
+          allocator_.construct(std::move(i));
         }
       }
       if (newSize < size_) {
