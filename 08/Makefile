@@ -1,6 +1,6 @@
 CC=g++
-FLAGS=-std=c++17 -g -pthread#-fsanitize=address
-WARNINGS = -Wall -Wextra -Werror -Wunused
+FLAGS=-std=c++17 -g -pthread -fsanitize=thread
+WARNINGS = -Wall -Wextra -Wunused -Werror
 
 exec:  main.o
 	$(CC) $(FLAGS) -o exec main.o

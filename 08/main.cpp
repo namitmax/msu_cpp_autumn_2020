@@ -24,7 +24,7 @@ std::string fooB(const B& temp) {
 }
 
 void MoreThreadsTest() {
-  ThreadPool pool;
+  ThreadPool pool(10);
   std::vector<int> log;
   for (int i = 0; i < 10; ++i) {
     auto taskI = pool.exec(fooI, i);

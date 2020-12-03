@@ -25,7 +25,7 @@ class ThreadPool {
       finished(false),
       size(std::thread::hardware_concurrency()) {
         for (size_t i = 0; i < size; i++) {
-          workThreads.push_back(std::thread([this] {
+          workThreads.emplace_back(std::thread([this] {
             this->threadFunction();
           }));
         }
@@ -35,7 +35,7 @@ class ThreadPool {
       finished(false),
       size(poolSize) {
         for (size_t i = 0; i < poolSize; i++) {
-          workThreads.push_back(std::thread([this] {
+          workThreads.emplace_back(std::thread([this] {
             this->threadFunction();
           }));
         }
@@ -70,9 +70,12 @@ class ThreadPool {
         return func(args...);
       });
       auto result = task->get_future();
-      tasks.push([task]() {
-        (*task)();
-      });
+      {
+        std::unique_lock<std::mutex> lock(mutex);
+        tasks.emplace([task]() {
+          (*task)();
+        });
+      }
       newTask.notify_one();
       return result;
     }
