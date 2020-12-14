@@ -1,6 +1,10 @@
 #ifndef FILE_SORT_HPP_
 #define FILE_SORT_HPP_
-#define TEMP_SIZE 1000
+#define TEMP_SIZE 1000000
+/* 8 мб = 8 * 1024 кб = 8 * 1024 * 1024 ба
+ * unint64_t ~ 8 ба
+ * SIZE = 1000 * 1000 < 1024 * 1024 с запасом
+ */
 
 #include <fstream>
 #include <thread>

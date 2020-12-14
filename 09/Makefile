@@ -1,5 +1,5 @@
 CC=g++
-FLAGS=-std=c++17 -g -pthread -fsanitize=thread
+FLAGS=-std=c++17 -g -pthread -O3 -fsanitize=thread
 WARNINGS = -Wall -Wextra -Wunused -Werror
 
 exec:  main.o
